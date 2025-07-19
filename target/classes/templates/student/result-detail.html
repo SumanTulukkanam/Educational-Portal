@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Exam Result Details</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<head>
+	    <title>Exam Result Details</title>
+	    <meta charset="UTF-8">
+	    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+	    <style>
+	        body {
+	            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+	            background-color: #f5f7fa;
+	            margin: 0;
+	            padding: 20px;
+	            color: #333;
+	        }
+
+	        h1, h2, h4 {
+	            color: #2c3e50;
+	            text-align: center;
+	        }
+
+	        nav {
+	            text-align: center;
+	            margin-bottom: 30px;
+	        }
+
+	        nav a {
+	            margin: 0 12px;
+	            text-decoration: none;
+	            color: #007bff;
+	            font-weight: bold;
+	        }
+
+	        nav a:hover {
+	            text-decoration: underline;
+	        }
+
+	        div {
+	            max-width: 900px;
+	            margin: auto;
+	            padding-bottom: 20px;
+	        }
+
+	        p {
+	            margin: 8px 0;
+	            font-size: 15px;
+	        }
+
+	        ul {
+	            padding-left: 20px;
+	        }
+
+	        ul li {
+	            margin: 3px 0;
+	        }
+
+	        .answer-box {
+	            border: 1px solid #dcdcdc;
+	            border-radius: 6px;
+	            background-color: #fff;
+	            padding: 15px;
+	            margin-bottom: 15px;
+	            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+	        }
+
+	        .status-correct {
+	            color: green;
+	            font-weight: bold;
+	        }
+
+	        .status-wrong {
+	            color: red;
+	            font-weight: bold;
+	        }
+
+	        .status-unanswered {
+	            color: orange;
+	            font-weight: bold;
+	        }
+
+	        .summary {
+	            background-color: #ecf0f1;
+	            padding: 10px 15px;
+	            border-radius: 6px;
+	            margin-bottom: 20px;
+	        }
+
+	        .remarks-box {
+	            background-color: #fef3c7;
+	            padding: 10px 15px;
+	            border: 1px solid #fcd34d;
+	            border-radius: 6px;
+	            margin-bottom: 20px;
+	        }
+	    </style>
+	</head>
+
+</head>
+<body>
+    <h1>Exam Result Details</h1>
+    
+    <nav>
+        <a href="/student/dashboard">Dashboard</a> |
+        <a href="/student/results">All Results</a> |
+        <a href="/student/logout">Logout</a>
+    </nav>
+
+    <div>
+        <h2>Exam Information</h2>
+        <p><strong>Exam:</strong> <span th:text="${attempt.exam.title}">Exam Title</span></p>
+        <p><strong>Start Time:</strong> <span th:text="${#temporals.format(attempt.startTime, 'dd-MM-yyyy HH:mm:ss')}">Start Time</span></p>
+        <p><strong>End Time:</strong> <span th:text="${attempt.endTime != null ? #temporals.format(attempt.endTime, 'dd-MM-yyyy HH:mm:ss') : 'N/A'}">End Time</span></p>
+        <p><strong>Status:</strong> <span th:text="${attempt.status}">Status</span></p>
+        <p><strong>Window Switch Count:</strong> <span th:text="${attempt.windowSwitchCount}">0</span></p>
+    </div>
+
+    <div>
+        <h2>Score Summary</h2>
+        <p><strong>Total Questions:</strong> <span th:text="${attempt.totalQuestions}">0</span></p>
+        <p><strong>Correct Answers:</strong> <span th:text="${attempt.correctAnswers}">0</span></p>
+        <p><strong>Wrong Answers:</strong> <span th:text="${attempt.wrongAnswers}">0</span></p>
+        <p><strong>Unanswered:</strong> <span th:text="${attempt.unansweredQuestions}">0</span></p>
+        <p><strong>Obtained Marks:</strong> <span th:text="${attempt.obtainedMarks}">0</span></p>
+        <p><strong>Total Marks:</strong> <span th:text="${attempt.exam.totalMarks}">0</span></p>
+        <p><strong>Percentage:</strong> <span th:text="${attempt.percentage} + '%'">0%</span></p>
+        <p><strong>Result:</strong> 
+            <span th:text="${attempt.passed ? 'PASS' : 'FAIL'}" 
+                  th:style="${attempt.passed ? 'color: green; font-weight: bold;' : 'color: red; font-weight: bold;'}">Result</span>
+        </p>
+    </div>
+
+    <div th:if="${attempt.remarks}">
+        <h2>Remarks</h2>
+        <p th:text="${attempt.remarks}">Remarks</p>
+    </div>
+
+    <div>
+        <h2>Answer Details</h2>
+        <div th:each="answer : ${answers}">
+            <div style="border: 1px solid #ccc; margin: 10px 0; padding: 10px;">
+                <h4>Question <span th:text="${answer.question.questionNumber}">1</span></h4>
+                <p><strong>Question:</strong> <span th:text="${answer.question.questionText}">Question text</span></p>
+                
+                <p><strong>Options:</strong></p>
+                <ul>
+                    <li>A) <span th:text="${answer.question.optionA}">Option A</span></li>
+                    <li>B) <span th:text="${answer.question.optionB}">Option B</span></li>
+                    <li>C) <span th:text="${answer.question.optionC}">Option C</span></li>
+                    <li>D) <span th:text="${answer.question.optionD}">Option D</span></li>
+                </ul>
+                
+                <p><strong>Correct Answer:</strong> <span th:text="${answer.question.correctAnswer}" style="color: green; font-weight: bold;">A</span></p>
+                <p><strong>Your Answer:</strong> 
+                    <span th:if="${answer.selectedAnswer}" 
+                          th:text="${answer.selectedAnswer}" 
+                          th:style="${answer.correct ? 'color: green; font-weight: bold;' : 'color: red; font-weight: bold;'}">Your Answer</span>
+                    <span th:unless="${answer.selectedAnswer}" style="color: orange;">Not Answered</span>
+                </p>
+                <p><strong>Marks:</strong> <span th:text="${answer.marksObtained} + '/' + ${answer.question.marks}">0/1</span></p>
+                <p><strong>Status:</strong> 
+                    <span th:if="${answer.selectedAnswer == null}" style="color: orange;">Not Answered</span>
+                    <span th:if="${answer.selectedAnswer != null and answer.correct}" style="color: green;">Correct</span>
+                    <span th:if="${answer.selectedAnswer != null and !answer.correct}" style="color: red;">Wrong</span>
+                </p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

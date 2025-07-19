@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<title>Available Exams</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+    body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background-color: #f4f6f9;
+        margin: 0;
+        padding: 20px;
+    }
+
+    h1, h2 {
+        color: #333;
+        text-align: center;
+        margin-bottom: 20px;
+    }
+
+    nav {
+        text-align: center;
+        margin-bottom: 30px;
+    }
+
+    nav a {
+        margin: 0 10px;
+        text-decoration: none;
+        color: #007BFF;
+        font-weight: bold;
+    }
+
+    nav a:hover {
+        text-decoration: underline;
+    }
+
+    .alert {
+        padding: 15px;
+        margin: 20px auto;
+        max-width: 600px;
+        border-radius: 6px;
+        font-weight: bold;
+        text-align: center;
+    }
+
+    .alert-success {
+        color: #155724;
+        background-color: #d4edda;
+        border: 1px solid #c3e6cb;
+    }
+
+    .alert-error {
+        color: #721c24;
+        background-color: #f8d7da;
+        border: 1px solid #f5c6cb;
+    }
+
+    table {
+        width: 90%;
+        margin: 0 auto 40px auto;
+        border-collapse: collapse;
+        background-color: #fff;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+
+    th, td {
+        padding: 12px 15px;
+        border: 1px solid #ddd;
+        text-align: center;
+    }
+
+    th {
+        background-color: #007BFF;
+        color: #fff;
+    }
+
+    td a {
+        background-color: #28a745;
+        color: #fff;
+        padding: 6px 12px;
+        text-decoration: none;
+        border-radius: 4px;
+    }
+
+    td a:hover {
+        background-color: #218838;
+    }
+
+    .view-result-btn {
+        background-color: #17a2b8;
+    }
+
+    .view-result-btn:hover {
+        background-color: #138496;
+    }
+
+    .status-completed {
+        color: #28a745;
+        font-weight: bold;
+    }
+
+    .status-terminated {
+        color: #dc3545;
+        font-weight: bold;
+    }
+
+    .status-timed-out {
+        color: #ffc107;
+        font-weight: bold;
+    }
+
+    p {
+        text-align: center;
+        color: #555;
+    }
+</style>
+
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
+</head>
+<body>
+<h1>Available Exams</h1>
+
+<nav>
+<a href="/student/dashboard">Dashboard</a> |
+<a href="/student/results">Results</a> |
+<a href="/student/logout">Logout</a>
+</nav>
+
+<!-- Success message from flash attributes -->
+<div th:if="${successMessage}" class="alert alert-success" th:text="${successMessage}"></div>
+
+<!-- Error message from URL parameters -->
+<div th:if="${param.error}" class="alert alert-error">
+<p th:text="${param.error}">Error message</p>
+</div>
+
+<h2>Available Exams</h2>
+<div th:if="${availableExams.isEmpty()}">
+<p>No exams available at the moment.</p>
+</div>
+
+<div th:unless="${availableExams.isEmpty()}">
+<table id="availableExamsTable" class="display" style="width:100%">
+<thead>
+<tr>
+<th>Title</th>
+<th>Description</th>
+<th>Duration</th>
+<th>Total Marks</th>
+<th>Passing Marks</th>
+<th>Start Time</th>
+<th>End Time</th>
+<th>Action</th>
+</tr>
+</thead>
+<tbody>
+<tr th:each="exam : ${availableExams}">
+<td th:text="${exam.title}">Exam Title</td>
+<td th:text="${exam.description}">Description</td>
+<td th:text="${exam.duration} + ' minutes'">Duration</td>
+<td th:text="${exam.totalMarks}">Total Marks</td>
+<td th:text="${exam.passingMarks}">Passing Marks</td>
+<td th:text="${#temporals.format(exam.startTime, 'dd-MM-yyyy HH:mm')}">Start Time</td>
+<td th:text="${#temporals.format(exam.endTime, 'dd-MM-yyyy HH:mm')}">End Time</td>
+<td>
+<a th:href="@{/student/exams/{id}/start(id=${exam.id})}">Start Exam</a>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+
+<h2>Upcoming Exams</h2>
+<div th:if="${upcomingExams.isEmpty()}">
+<p>No upcoming exams.</p>
+</div>
+
+<div th:unless="${upcomingExams.isEmpty()}">
+<table id="upcomingExamsTable" class="display" style="width:100%">
+<thead>
+<tr>
+<th>Title</th>
+<th>Description</th>
+<th>Duration</th>
+<th>Start Time</th>
+<th>End Time</th>
+<th>Status</th>
+</tr>
+</thead>
+<tbody>
+<tr th:each="exam : ${upcomingExams}">
+<td th:text="${exam.title}">Exam Title</td>
+<td th:text="${exam.description}">Description</td>
+<td th:text="${exam.duration} + ' minutes'">Duration</td>
+<td th:text="${#temporals.format(exam.startTime, 'dd-MM-yyyy HH:mm')}">Start Time</td>
+<td th:text="${#temporals.format(exam.endTime, 'dd-MM-yyyy HH:mm')}">End Time</td>
+<td>Upcoming</td>
+</tr>
+</tbody>
+</table>
+</div>
+
+<h2>Completed Exams</h2>
+<div th:if="${completedExamsWithInfo.isEmpty()}">
+<p>No completed exams.</p>
+</div>
+
+<div th:unless="${completedExamsWithInfo.isEmpty()}">
+<table id="completedExamsTable" class="display" style="width:100%">
+<thead>
+<tr>
+<th>Title</th>
+<th>Description</th>
+<th>Duration</th>
+<th>Total Marks</th>
+<th>Passing Marks</th>
+<th>Start Time</th>
+<th>End Time</th>
+<th>Status</th>
+<th>Action</th>
+</tr>
+</thead>
+<tbody>
+<tr th:each="examWithInfo : ${completedExamsWithInfo}">
+    <td th:text="${examWithInfo.exam.title}">Exam Title</td>
+    <td th:text="${examWithInfo.exam.description}">Description</td>
+    <td th:text="${examWithInfo.exam.duration} + ' minutes'">Duration</td>
+    <td th:text="${examWithInfo.exam.totalMarks}">Total Marks</td>
+    <td th:text="${examWithInfo.exam.passingMarks}">Passing Marks</td>
+    <td th:text="${#temporals.format(examWithInfo.exam.startTime, 'dd-MM-yyyy HH:mm')}">Start Time</td>
+    <td th:text="${#temporals.format(examWithInfo.exam.endTime, 'dd-MM-yyyy HH:mm')}">End Time</td>
+    <td>
+        <span th:class="${examWithInfo.statusClass}"
+              th:text="${examWithInfo.attempt.status}">
+        </span>
+    </td>
+    <td>
+        <a th:href="@{/student/results/{id}(id=${examWithInfo.attempt.id})}" 
+           class="view-result-btn">View Result</a>
+    </td>
+</tr>
+</tbody>
+</table>
+</div>
+
+<!-- jQuery and DataTables JS -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+
+<script>
+$(document).ready(function() {
+    // Initialize Available Exams Table
+    $('#availableExamsTable').DataTable({
+        "pageLength": 10,
+        "lengthChange": true,
+        "searching": true,
+        "ordering": true,
+        "info": true,
+        "autoWidth": false,
+        "responsive": true
+    });
+    
+    // Initialize Upcoming Exams Table
+    $('#upcomingExamsTable').DataTable({
+        "pageLength": 10,
+        "lengthChange": true,
+        "searching": true,
+        "ordering": true,
+        "info": true,
+        "autoWidth": false,
+        "responsive": true
+    });
+    
+    // Initialize Completed Exams Table
+    $('#completedExamsTable').DataTable({
+        "pageLength": 10,
+        "lengthChange": true,
+        "searching": true,
+        "ordering": true,
+        "info": true,
+        "autoWidth": false,
+        "responsive": true
+    });
+});
+</script>
+</body>
+</html>

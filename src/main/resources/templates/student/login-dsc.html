@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DSC Authentication - Student Portal</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            max-width: 600px;
+            width: 100%;
+            padding: 40px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+        }
+
+        .back-link {
+            color: #667eea;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            margin-bottom: 20px;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        .back-link:hover {
+            color: #764ba2;
+        }
+
+        .title {
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 28px;
+            font-weight: 600;
+        }
+
+        .welcome-message {
+            background: linear-gradient(135deg, #e8f4fd, #f0f8ff);
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 25px;
+            border-left: 4px solid #667eea;
+        }
+
+        .instructions {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 25px;
+            color: #856404;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e1e5e9;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+            background: #f8f9fa;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+            background: white;
+        }
+
+        .form-text {
+            font-size: 14px;
+            color: #6c757d;
+            margin-top: 5px;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            margin-bottom: 15px;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, #6c757d, #495057);
+            text-decoration: none;
+            display: block;
+            text-align: center;
+        }
+
+        .btn-test {
+            background: linear-gradient(135deg, #28a745, #20c997);
+            margin-bottom: 20px;
+        }
+
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            border-left: 4px solid #dc3545;
+        }
+
+        .success {
+            background: #d4edda;
+            color: #155724;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            border-left: 4px solid #28a745;
+        }
+
+        .info {
+            background: #d1ecf1;
+            color: #0c5460;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            border-left: 4px solid #17a2b8;
+        }
+
+        .certificate-info {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 15px;
+            margin-top: 30px;
+            border: 1px solid #e9ecef;
+        }
+
+        .certificate-info h3 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+            font-size: 20px;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 6px;
+            background: #e9ecef;
+            border-radius: 3px;
+            overflow: hidden;
+            margin: 15px 0;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        .loading-spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            animation: spin 1s linear infinite;
+            display: inline-block;
+            margin-right: 10px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .file-preview {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 10px;
+            border: 1px dashed #dee2e6;
+            text-align: center;
+        }
+
+        .signature-test-section {
+            background: #e8f4fd;
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 25px;
+            border: 1px solid #b8daff;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="/student/login" class="back-link">← Back to Login</a>
+        <h2 class="title">🔐 Digital Signature Certificate Authentication</h2>
+        
+        <div th:if="${error}" class="error">
+            <p th:text="${error}"></p>
+        </div>
+
+        <div th:if="${student}">
+            <div class="welcome-message">
+                <p>
+                    Welcome, <strong th:text="${student.name}"></strong>! 
+                    Please upload the same DSC certificate file you used during registration.
+                </p>
+            </div>
+            
+          
+
+
+            <form th:action="@{/student/login-dsc}" method="post" enctype="multipart/form-data" id="dscLoginForm">
+                <div class="form-group">
+                    <label for="dscFile">📁 Upload your DSC Certificate (.jks file):</label>
+                    <input type="file" 
+                           class="form-control" 
+                           id="dscFile" 
+                           name="dscFile" 
+                           accept=".jks"
+                           required>
+                    <small class="form-text">Only JKS format DSC certificates are accepted.</small>
+                    <div id="fileValidationMessage"></div>
+                   
+                </div>
+                
+                <div class="form-group">
+                    <label for="dscPassword">🔑 DSC Password:</label>
+                    <input type="password" 
+                           class="form-control"
+                           id="dscPassword" 
+                           name="dscPassword" 
+                           placeholder="Enter your DSC password"
+                           required>
+                </div>
+
+                <div class="progress-bar" id="authProgress" style="display: none;">
+                    <div class="progress-fill" id="progressFill"></div>
+                </div>
+
+                <button type="submit" class="btn" id="submitBtn">
+                    🔐 Authenticate with DSC
+                </button>
+                <a href="/student/login" class="btn btn-secondary">← Back to Login</a>
+            </form>
+
+            <div class="certificate-info" th:if="${student.certificatePath}">
+                <h3>📋 Registered Certificate Information</h3>
+                <p><strong>Certificate Status:</strong> <span style="color: green;">✓ Registered</span></p>
+                <p><strong>Registration Date:</strong> 
+                   <span th:text="${student.certificateCreatedDate != null ? #temporals.format(student.certificateCreatedDate, 'dd-MM-yyyy HH:mm') : 'Not available'}"></span>
+                </p>
+                <p><strong>Organization:</strong> 
+                   <span th:text="${student.organizationName != null ? student.organizationName : 'Not specified'}"></span>
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Enhanced DSC Authentication JavaScript
+        class DSCAuthenticator {
+            constructor() {
+                this.initializeEventListeners();
+            }
+
+            initializeEventListeners() {
+                // Test signature button
+                const testSignatureBtn = document.getElementById('testSignatureBtn');
+                if (testSignatureBtn) {
+                    testSignatureBtn.addEventListener('click', () => this.testDscSignature());
+                }
+
+                // Enhanced form validation for DSC upload
+                const dscForm = document.getElementById('dscLoginForm');
+                if (dscForm) {
+                    dscForm.addEventListener('submit', (e) => this.handleDscLogin(e));
+                }
+
+                // File upload validation
+                const dscFileInput = document.getElementById('dscFile');
+                if (dscFileInput) {
+                    dscFileInput.addEventListener('change', (e) => this.validateDscFile(e));
+                }
+
+                // Password strength indicator
+                const passwordInput = document.getElementById('dscPassword');
+                if (passwordInput) {
+                    passwordInput.addEventListener('input', (e) => this.validatePassword(e));
+                }
+            }
+
+            validateDscFile(event) {
+                const file = event.target.files[0];
+                const messageDiv = document.getElementById('fileValidationMessage');
+                const previewDiv = document.getElementById('filePreview');
+                
+                if (!file) {
+                    this.showMessage(messageDiv, '', 'info');
+                    previewDiv.style.display = 'none';
+                    return;
+                }
+
+                if (!file.name.toLowerCase().endsWith('.jks')) {
+                    this.showMessage(messageDiv, '❌ Please select a valid .jks certificate file.', 'error');
+                    event.target.value = '';
+                    previewDiv.style.display = 'none';
+                    return;
+                }
+
+                if (file.size > 5 * 1024 * 1024) { // 5MB limit
+                    this.showMessage(messageDiv, '❌ Certificate file is too large. Maximum size is 5MB.', 'error');
+                    event.target.value = '';
+                    previewDiv.style.display = 'none';
+                    return;
+                }
+
+                this.showMessage(messageDiv, `✅ Selected: ${file.name} (${this.formatFileSize(file.size)})`, 'success');
+                
+                // Show file preview
+                previewDiv.innerHTML = `
+                    <div style="display: flex; align-items: center; justify-content: center;">
+                        <span style="margin-right: 10px;">📄</span>
+                        <div>
+                            <strong>${file.name}</strong><br>
+                            <small>Size: ${this.formatFileSize(file.size)} | Type: JKS Certificate</small>
+                        </div>
+                    </div>
+                `;
+                previewDiv.style.display = 'block';
+            }
+
+            validatePassword(event) {
+                const password = event.target.value;
+                // Basic password validation (you can enhance this)
+                if (password.length > 0 && password.length < 4) {
+                    event.target.style.borderColor = '#dc3545';
+                } else if (password.length >= 4) {
+                    event.target.style.borderColor = '#28a745';
+                } else {
+                    event.target.style.borderColor = '#e1e5e9';
+                }
+            }
+
+            async testDscSignature() {
+                const dscFile = document.getElementById('dscFile').files[0];
+                const dscPassword = document.getElementById('dscPassword').value;
+                const resultDiv = document.getElementById('signatureTestResult');
+                const testBtn = document.getElementById('testSignatureBtn');
+
+                if (!dscFile || !dscPassword) {
+                    this.showMessage(resultDiv, '⚠️ Please select a DSC file and enter password first.', 'error');
+                    return;
+                }
+
+                // Show loading state
+                const originalText = testBtn.textContent;
+                testBtn.innerHTML = '<span class="loading-spinner"></span>Testing Signature...';
+                testBtn.disabled = true;
+
+                const formData = new FormData();
+                formData.append('dscFile', dscFile);
+                formData.append('dscPassword', dscPassword);
+
+                try {
+                    const response = await fetch('/student/test-dsc-signature', {
+                        method: 'POST',
+                        body: formData
+                    });
+
+                    const result = await response.json();
+
+                    if (result.success) {
+                        this.showMessage(resultDiv, 
+                            `✅ <strong>DSC Signature Test Successful!</strong><br>
+                            <small style="opacity: 0.8;">Challenge: ${result.challenge.substring(0, 50)}...</small><br>
+                            <small style="opacity: 0.8;">Signature: ${result.signature.substring(0, 50)}...</small><br>
+                            <small style="color: green; font-weight: bold;">Your certificate is ready for authentication!</small>`, 
+                            'success');
+                        
+                        // Enable the submit button with enhanced styling
+                        const submitBtn = document.getElementById('submitBtn');
+                        submitBtn.style.background = 'linear-gradient(135deg, #28a745, #20c997)';
+                        submitBtn.innerHTML = '🔐 Certificate Verified - Proceed to Login';
+                    } else {
+                        this.showMessage(resultDiv, 
+                            `❌ <strong>DSC Signature Test Failed</strong><br>
+                            <small>${result.message || 'Unknown error occurred'}</small><br>
+                            <small style="color: #dc3545;">Please check your certificate file and password.</small>`, 
+                            'error');
+                    }
+                } catch (error) {
+                    this.showMessage(resultDiv, 
+                        `❌ <strong>Network Error</strong><br>
+                        <small>Could not connect to server. Please check your connection and try again.</small>`, 
+                        'error');
+                    console.error('DSC test error:', error);
+                } finally {
+                    testBtn.textContent = originalText;
+                    testBtn.disabled = false;
+                }
+            }
+
+            handleDscLogin(event) {
+                const dscFile = document.getElementById('dscFile').files[0];
+                const dscPassword = document.getElementById('dscPassword').value;
+                const submitBtn = document.getElementById('submitBtn');
+                const progressBar = document.getElementById('authProgress');
+                const progressFill = document.getElementById('progressFill');
+
+                if (!dscFile || !dscPassword.trim()) {
+                    event.preventDefault();
+                    alert('Please select a DSC file and enter your password.');
+                    return false;
+                }
+
+                if (!this.validateJksFile(dscFile)) {
+                    event.preventDefault();
+                    return false;
+                }
+
+                // Show progress animation
+                progressBar.style.display = 'block';
+                submitBtn.innerHTML = '<span class="loading-spinner"></span>Authenticating...';
+                submitBtn.disabled = true;
+
+                // Animate progress bar
+                let progress = 0;
+                const progressInterval = setInterval(() => {
+                    progress += 2;
+                    progressFill.style.width = progress + '%';
+                    if (progress >= 90) {
+                        clearInterval(progressInterval);
+                    }
+                }, 50);
+
+                return true;
+            }
+
+            validateJksFile(file) {
+                if (!file.name.toLowerCase().endsWith('.jks')) {
+                    alert('Please select a valid JKS file (.jks extension required)');
+                    return false;
+                }
+                
+                const maxSize = 10 * 1024 * 1024; // 10MB
+                if (file.size > maxSize) {
+                    alert('File size is too large. Please select a file smaller than 10MB.');
+                    return false;
+                }
+                return true;
+            }
+
+            showMessage(element, message, type) {
+                if (!element) return;
+                
+                element.className = type;
+                element.innerHTML = message;
+                element.style.display = message ? 'block' : 'none';
+
+                // Auto-hide info messages after 5 seconds
+                if (type === 'info' && message) {
+                    setTimeout(() => {
+                        element.style.display = 'none';
+                    }, 5000);
+                }
+            }
+
+            formatFileSize(bytes) {
+                if (bytes === 0) return '0 Bytes';
+                const k = 1024;
+                const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+                const i = Math.floor(Math.log(bytes) / Math.log(k));
+                return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+            }
+        }
+
+        // Initialize when DOM is loaded
+        document.addEventListener('DOMContentLoaded', function() {
+            new DSCAuthenticator();
+        });
+
+        // Legacy function for backward compatibility
+        function validateJksFile(input) {
+            const authenticator = new DSCAuthenticator();
+            return authenticator.validateJksFile(input.files[0]);
+        }
+
+        function validateForm() {
+            const authenticator = new DSCAuthenticator();
+            const event = { preventDefault: () => {} };
+            return authenticator.handleDscLogin(event);
+        }
+    </script>
+</body>
+</html>

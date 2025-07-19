@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Educational Portal - Home</title>
+	<style>
+	       /* Base and Reset */
+	       * {
+	           margin: 0;
+	           padding: 0;
+	           box-sizing: border-box;
+	       }
+
+	       body {
+	           font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+	           background-color: #f4f6fb;
+	           color: #333;
+	           min-height: 100vh;
+	           display: flex;
+	           align-items: center;
+	           justify-content: center;
+	           padding: 20px;
+	       }
+
+	       .container {
+	           text-align: center;
+	           max-width: 700px;
+	           background-color: #fff;
+	           padding: 40px 30px;
+	           border-radius: 12px;
+	           box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+	       }
+
+	       .title {
+	           font-size: 2.5rem;
+	           color: #2c3e50;
+	           margin-bottom: 10px;
+	       }
+
+	       .subtitle {
+	           font-size: 1.1rem;
+	           color: #666;
+	           margin-bottom: 30px;
+	       }
+
+	       .portal-grid {
+	           display: flex;
+	           flex-wrap: wrap;
+	           justify-content: center;
+	           gap: 30px;
+	       }
+
+	       .portal-card {
+	           background-color: #f9f9f9;
+	           padding: 25px 20px;
+	           width: 250px;
+	           border-radius: 10px;
+	           text-decoration: none;
+	           color: inherit;
+	           box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+	           transition: transform 0.3s, box-shadow 0.3s;
+	       }
+
+	       .portal-card:hover {
+	           transform: translateY(-5px);
+	           box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+	       }
+
+	       .portal-icon {
+	           font-size: 3rem;
+	           margin-bottom: 15px;
+	       }
+
+	       .portal-title {
+	           font-size: 1.4rem;
+	           margin-bottom: 8px;
+	           font-weight: 600;
+	           color: #34495e;
+	       }
+
+	       .portal-desc {
+	           font-size: 0.95rem;
+	           color: #666;
+	       }
+
+	       .admin-card {
+	           background-color: #f1f5ff;
+	       }
+
+	       @media (max-width: 600px) {
+	           .portal-grid {
+	               flex-direction: column;
+	               gap: 20px;
+	           }
+
+	           .portal-card {
+	               width: 100%;
+	           }
+	       }
+	   </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="title">🎓 Educational Portal</h1>
+        <p class="subtitle">Choose your portal to continue</p>
+        
+        <div class="portal-grid">
+            <a href="/student/" class="portal-card">
+                <div class="portal-icon">👨‍🎓</div>
+                <h2 class="portal-title">Student Portal</h2>
+                <p class="portal-desc">Register, Login & Manage your account</p>
+            </a>
+            
+            <a href="/admin/" class="portal-card admin-card">
+                <div class="portal-icon">👨‍💼</div>
+                <h2 class="portal-title">Admin Portal</h2>
+                <p class="portal-desc">Manage students & system administration</p>
+            </a>
+        </div>
+    </div>
+</body>
+</html>

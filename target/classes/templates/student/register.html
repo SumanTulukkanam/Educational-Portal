@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Registration</title>
+    <style>
+        /* Reset and base styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f3f6f9;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            color: #333;
+        }
+
+        .container {
+            background: #fff;
+            width: 100%;
+            max-width: 500px;
+            padding: 35px 30px;
+            border-radius: 12px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+            position: relative;
+            text-align: center;
+        }
+
+        .back-link {
+            position: absolute;
+            top: 15px;
+            left: 20px;
+            font-size: 0.9rem;
+            text-decoration: none;
+            color: #555;
+            transition: color 0.3s;
+        }
+
+        .back-link:hover {
+            color: #f5576c;
+        }
+
+        .title {
+            font-size: 2rem;
+            margin-bottom: 20px;
+            color: #2c3e50;
+        }
+
+        .error,
+        .success {
+            padding: 12px;
+            margin-bottom: 20px;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+
+        .error {
+            background-color: #fdecea;
+            color: #e74c3c;
+            border: 1px solid #e74c3c;
+        }
+
+        .success {
+            background-color: #eafaf1;
+            color: #28a745;
+            border: 1px solid #28a745;
+        }
+
+        form {
+            text-align: left;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #34495e;
+        }
+
+        input[type="text"],
+        input[type="email"],
+        input[type="password"],
+        input[type="file"],
+        select {
+            width: 100%;
+            padding: 12px 15px;
+            border-radius: 8px;
+            border: 1.5px solid #ccc;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+        }
+
+        input:focus, select:focus {
+            border-color: #f5576c;
+            outline: none;
+            box-shadow: 0 0 6px rgba(245, 87, 108, 0.4);
+        }
+
+        .dsc-section {
+            background-color: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            border: 2px dashed #dee2e6;
+            margin-bottom: 20px;
+        }
+
+        .dsc-section h3 {
+            color: #495057;
+            margin-bottom: 15px;
+            font-size: 1.1rem;
+        }
+
+        .auth-option {
+            margin-bottom: 15px;
+        }
+
+        .auth-option input[type="radio"] {
+            width: auto;
+            margin-right: 10px;
+        }
+
+        .auth-option label {
+            display: inline;
+            font-weight: normal;
+            margin-bottom: 0;
+        }
+
+        .dsc-fields {
+            display: none;
+            margin-top: 15px;
+        }
+
+        .btn {
+            width: 100%;
+            background-color: #f5576c;
+            color: white;
+            padding: 14px 0;
+            font-size: 1.1rem;
+            border: none;
+            border-radius: 30px;
+            font-weight: bold;
+            box-shadow: 0 6px 12px rgba(245, 87, 108, 0.4);
+            cursor: pointer;
+            transition: background-color 0.3s, box-shadow 0.3s;
+        }
+
+        .btn:hover {
+            background-color: #d94359;
+            box-shadow: 0 8px 16px rgba(217, 67, 89, 0.6);
+        }
+
+        p {
+            font-size: 0.95rem;
+            margin-top: 25px;
+            color: #666;
+        }
+
+        p a {
+            color: #f5576c;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        p a:hover {
+            color: #d94359;
+        }
+
+        .file-upload-note {
+            font-size: 0.85rem;
+            color: #6c757d;
+            margin-top: 5px;
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 30px 20px;
+            }
+
+            .title {
+                font-size: 1.8rem;
+            }
+
+            .btn {
+                font-size: 1rem;
+                padding: 12px 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2 class="title">Student Registration</h2>
+        
+        <div th:if="${error}" class="error">
+            <p th:text="${error}"></p>
+        </div>
+        
+        <div th:if="${message}" class="success">
+            <p th:text="${message}"></p>
+        </div>
+
+        <form th:action="@{/student/register}" method="post" th:object="${student}" enctype="multipart/form-data">
+            <div class="form-group">
+                <label for="studentId">Student ID:</label>
+                <input type="text" id="studentId" th:field="*{studentId}" required>
+            </div>
+
+            <div class="form-group">
+                <label for="name">Full Name:</label>
+                <input type="text" id="name" th:field="*{name}" required>
+            </div>
+
+            <div class="form-group">
+                <label for="email">Email:</label>
+                <input type="email" id="email" th:field="*{email}" required>
+            </div>
+
+            <div class="form-group">
+                <label for="password">Password:</label>
+                <input type="password" id="password" th:field="*{password}" required>
+            </div>
+
+            <div class="form-group">
+                <label for="organizationName">Organization Name:</label>
+                <input type="text" id="organizationName" th:field="*{organizationName}" placeholder="e.g., ABC University">
+            </div>
+
+            <div class="form-group">
+                <label for="organizationUnit">Organization Unit:</label>
+                <input type="text" id="organizationUnit" th:field="*{organizationUnit}" placeholder="e.g., Computer Science Department">
+            </div>
+
+            <div class="dsc-section">
+                <h3>Digital Signature Certificate (Optional)</h3>
+                <p>Upload your DSC (.jks file) if you have one:</p>
+                
+                <div class="form-group">
+                    <label for="dscFile">DSC File (.jks):</label>
+                    <input type="file" id="dscFile" name="dscFile" accept=".jks">
+                    <p class="file-upload-note">Note: Only .jks files are accepted</p>
+                </div>
+
+                <div class="form-group">
+                    <label for="dscPassword">DSC Password:</label>
+                    <input type="password" id="dscPassword" name="dscPassword" placeholder="Required if uploading DSC file">
+                </div>
+
+          
+
+                <p><strong>Note:</strong> If you don't have a DSC file, you can create one using the DSC generator tool provided by the institution.</p>
+            </div>
+
+            <div class="form-group">
+                <button type="submit" class="btn">Register</button>
+            </div>
+            
+            <p>Already have an account? <a href="/student/login">Login here</a></p>
+        </form>
+    </div>
+
+    <script>
+        // Show/hide DSC password field based on file selection
+        document.getElementById('dscFile').addEventListener('change', function() {
+            const dscPasswordField = document.getElementById('dscPassword');
+            if (this.files.length > 0) {
+                dscPasswordField.required = true;
+            } else {
+                dscPasswordField.required = false;
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Dashboard</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f9fafb;
+            color: #333;
+            line-height: 1.6;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding: 20px;
+        }
+
+        .container {
+            background: #fff;
+            max-width: 960px;
+            width: 100%;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            padding: 30px 40px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            color: #2c3e50;
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            color: #666;
+        }
+
+        .nav-links {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .nav-links a {
+            margin: 0 10px;
+            color: #3498db;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1rem;
+        }
+
+        .nav-links a:hover {
+            text-decoration: underline;
+        }
+
+        .welcome-message h2 {
+            font-size: 1.8rem;
+            color: #34495e;
+            margin-bottom: 20px;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .info-card {
+            background: #f1f5f9;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 1px 6px rgba(0, 0, 0, 0.05);
+            transition: box-shadow 0.3s ease;
+        }
+
+        .info-card:hover {
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .info-card h3 {
+            font-size: 1.2rem;
+            margin-bottom: 10px;
+            color: #34495e;
+        }
+
+        .info-card p {
+            font-size: 1.1rem;
+            color: #222;
+            word-break: break-word;
+        }
+
+        .actions {
+            text-align: center;
+        }
+
+        .logout-btn {
+            display: inline-block;
+            background-color: #e74c3c;
+            color: white;
+            padding: 12px 28px;
+            border-radius: 30px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1.1rem;
+            box-shadow: 0 4px 8px rgba(231, 76, 60, 0.4);
+            transition: background-color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .logout-btn:hover {
+            background-color: #c0392b;
+            box-shadow: 0 6px 14px rgba(192, 57, 43, 0.6);
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 20px;
+            }
+
+            .header h1 {
+                font-size: 2rem;
+            }
+
+            .welcome-message h2 {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container" th:if="${student}">
+        <div class="header">
+            <h1>🎓 Student Dashboard</h1>
+            <p>Welcome to your personal dashboard</p>
+        </div>
+
+        <div class="nav-links">
+            <a href="/student/dashboard">Dashboard</a>
+            <a href="/student/exams">Exams</a>
+            <a href="/student/results">Results</a>
+            <a href="/student/logout">Logout</a>
+        </div>
+
+        <div class="welcome-message">
+            <h2>Hello, <span th:text="${student.name}">Student Name</span>! 👋</h2>
+        </div>
+
+        <div class="info-grid">
+            <div class="info-card">
+                <h3>📋 Student ID</h3>
+                <p th:text="${student.studentId}">123456</p>
+            </div>
+
+            <div class="info-card">
+                <h3>👤 Full Name</h3>
+                <p th:text="${student.name}">John Doe</p>
+            </div>
+
+            <div class="info-card">
+                <h3>✉️ Email</h3>
+                <p th:text="${student.email}">email@example.com</p>
+            </div>
+
+            <div class="info-card">
+                <h3>🏢 Organization</h3>
+                <p th:text="${student.organizationName ?: 'Not specified'}">Not specified</p>
+            </div>
+
+            <div class="info-card">
+                <h3>🏬 Department</h3>
+                <p th:text="${student.organizationUnit ?: 'Not specified'}">Not specified</p>
+            </div>
+
+            <div class="info-card">
+                <h3>✅ Email Verified</h3>
+                <p>
+                    <span th:if="${student.verified}" style="color: green;">✓ Verified</span>
+                    <span th:unless="${student.verified}" style="color: red;">✗ Not Verified</span>
+                </p>
+            </div>
+
+            <div class="info-card">
+                <h3>🔐 DSC Status</h3>
+                <p>
+                    <span th:if="${student.hasDsc}" style="color: green;">✓ DSC Registered</span>
+                    <span th:unless="${student.hasDsc}" style="color: orange;">No DSC</span>
+                </p>
+            </div>
+
+            <div class="info-card" th:if="${student.hasDsc}">
+                <h3>🔑 Certificate Alias</h3>
+                <p th:text="${student.certificateAlias ?: 'Auto-detected'}">Auto-detected</p>
+            </div>
+
+            <div class="info-card" th:if="${student.hasDsc}">
+                <h3>📅 Certificate Created</h3>
+                <p th:text="${#temporals.format(student.certificateCreatedDate, 'dd-MM-yyyy HH:mm')}">01-01-2025 12:00</p>
+            </div>
+
+            <a href="/student/exams" style="text-decoration: none;">
+                <div class="info-card" style="text-align: center;">
+                    <h3>📚 View Exams</h3>
+                    <p style="color: #28a745; font-weight: 600;">Go to Exams</p>
+                </div>
+            </a>
+
+            <a href="/student/results" style="text-decoration: none;">
+                <div class="info-card" style="text-align: center;">
+                    <h3>📊 View Results</h3>
+                    <p style="color: #28a745; font-weight: 600;">Check Your Results</p>
+                </div>
+            </a>
+        </div>
+
+        <div class="actions">
+            <a href="/student/logout" class="logout-btn">Logout</a>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,186 @@
+
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Exam Form</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .question { margin-bottom: 30px; padding: 15px; border: 1px solid #ddd; border-radius: 5px; }
+        .question h3 { color: #333; margin-bottom: 10px; }
+        .question p { margin-bottom: 15px; font-weight: bold; }
+        .option { margin-bottom: 8px; }
+        .option input { margin-right: 8px; }
+        .option label { cursor: pointer; }
+        .btn { padding: 10px 20px; background-color: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer; }
+        .btn:hover { background-color: #0056b3; }
+        .timer { position: fixed; top: 10px; right: 10px; background: #f8f9fa; padding: 10px; border: 1px solid #ddd; border-radius: 5px; }
+    </style>
+</head>
+<body>
+    <div class="timer">
+        <strong>Time Remaining: <span id="timer">Loading...</span></strong>
+    </div>
+
+    <h1>Exam: <span th:text="${exam.title}">Exam Title</span></h1>
+    
+    <!-- Fixed form action with correct URL -->
+    <form id="exam-form" method="POST" th:action="@{/student/exams/{examId}/submit(examId=${exam.id})}">
+        <div th:each="question, questionStat : ${questions}" class="question">
+            <h3>Question <span th:text="${question.questionNumber}">1</span></h3>
+            <p th:text="${question.questionText}">Question text</p>
+
+            <!-- Fixed radio button structure -->
+            <div class="option">
+                <input type="radio" th:id="'q' + ${question.id} + '_A'"
+                       th:name="'question_' + ${question.id}" 
+                       value="A"
+                       th:checked="${#lists.contains(answers, question.id) and #lists.contains(answers, 'A')}"
+                       onchange="saveAnswer(this)">
+                <label th:for="'q' + ${question.id} + '_A'" th:text="${question.optionA}">Option A</label>
+            </div>
+
+            <div class="option">
+                <input type="radio" th:id="'q' + ${question.id} + '_B'"
+                       th:name="'question_' + ${question.id}" 
+                       value="B"
+                       th:checked="${#lists.contains(answers, question.id) and #lists.contains(answers, 'B')}"
+                       onchange="saveAnswer(this)">
+                <label th:for="'q' + ${question.id} + '_B'" th:text="${question.optionB}">Option B</label>
+            </div>
+
+            <div class="option">
+                <input type="radio" th:id="'q' + ${question.id} + '_C'"
+                       th:name="'question_' + ${question.id}" 
+                       value="C"
+                       th:checked="${#lists.contains(answers, question.id) and #lists.contains(answers, 'C')}"
+                       onchange="saveAnswer(this)">
+                <label th:for="'q' + ${question.id} + '_C'" th:text="${question.optionC}">Option C</label>
+            </div>
+
+            <div class="option">
+                <input type="radio" th:id="'q' + ${question.id} + '_D'"
+                       th:name="'question_' + ${question.id}" 
+                       value="D"
+                       th:checked="${#lists.contains(answers, question.id) and #lists.contains(answers, 'D')}"
+                       onchange="saveAnswer(this)">
+                <label th:for="'q' + ${question.id} + '_D'" th:text="${question.optionD}">Option D</label>
+            </div>
+        </div>
+
+        <button type="submit" class="btn" onclick="return confirmSubmit()">Submit Exam</button>
+    </form>
+
+    <script th:inline="javascript">
+        const examId = /*[[${exam.id}]]*/ 1;
+        const timeRemaining = /*[[${attempt.timeRemaining}]]*/ 3600;
+        
+        // Timer functionality
+        let remainingTime = timeRemaining;
+        const timerDisplay = document.getElementById('timer');
+        
+        function updateTimer() {
+            const hours = Math.floor(remainingTime / 3600);
+            const minutes = Math.floor((remainingTime % 3600) / 60);
+            const seconds = remainingTime % 60;
+            
+            timerDisplay.textContent = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            
+            if (remainingTime <= 0) {
+                alert('Time is up! Exam will be submitted automatically.');
+                document.getElementById('exam-form').submit();
+                return;
+            }
+            
+            remainingTime--;
+        }
+        
+        // Update timer every second
+        setInterval(updateTimer, 1000);
+        updateTimer(); // Initial call
+        
+        // Send time updates to server every 30 seconds
+        setInterval(function() {
+            fetch('/student/exams/update-time', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: 'timeRemaining=' + remainingTime
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.autoSubmitted) {
+                    alert('Time is up! Exam submitted automatically.');
+                    window.location.href = '/student/exams';
+                }
+            });
+        }, 30000);
+        
+        // Save answer function
+        function saveAnswer(radioButton) {
+            const questionId = radioButton.name.replace('question_', '');
+            const answer = radioButton.value;
+            
+            fetch(`/student/exams/${examId}/save-answer`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: `questionId=${questionId}&answer=${answer}`
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (!data.success) {
+                    console.error('Failed to save answer:', data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error saving answer:', error);
+            });
+        }
+        
+        // Confirm submit
+        function confirmSubmit() {
+            return confirm('Are you sure you want to submit your exam? You cannot change your answers after submission.');
+        }
+        
+        // Window switch detection
+        let windowSwitchCount = 0;
+        
+        window.addEventListener('blur', function() {
+            windowSwitchCount++;
+            
+            fetch('/student/exams/window-switch', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.terminated) {
+                    alert('Exam terminated due to excessive window switching!');
+                    window.location.href = '/student/exams';
+                } else if (data.windowSwitchCount >= 3) {
+                    alert(`Warning: You have switched windows ${data.windowSwitchCount} times. The exam will be terminated if you continue.`);
+                }
+            });
+        });
+        
+        // Prevent right-click and certain key combinations
+        document.addEventListener('contextmenu', function(e) {
+            e.preventDefault();
+        });
+        
+        document.addEventListener('keydown', function(e) {
+            // Prevent F12, Ctrl+Shift+I, Ctrl+U, etc.
+            if (e.key === 'F12' || 
+                (e.ctrlKey && e.shiftKey && e.key === 'I') ||
+                (e.ctrlKey && e.key === 'u')) {
+                e.preventDefault();
+            }
+        });
+    </script>
+</body>
+</html>

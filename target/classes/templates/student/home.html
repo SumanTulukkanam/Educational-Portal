@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Portal - Home</title>
+	<style>
+	        /* Reset and base styling */
+	        * {
+	            box-sizing: border-box;
+	            margin: 0;
+	            padding: 0;
+	        }
+
+	        body {
+	            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+	            background-color: #f3f6f9;
+	            color: #333;
+	            min-height: 100vh;
+	            padding: 30px 20px;
+	            display: flex;
+	            justify-content: center;
+	            align-items: center;
+	        }
+
+	        .container {
+	            max-width: 500px;
+	            width: 100%;
+	            background: #ffffff;
+	            padding: 40px 30px;
+	            border-radius: 12px;
+	            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+	            text-align: center;
+	        }
+
+	        .title {
+	            font-size: 2.2rem;
+	            margin-bottom: 10px;
+	            color: #2c3e50;
+	        }
+
+	        .container p {
+	            font-size: 1rem;
+	            color: #555;
+	            margin-bottom: 30px;
+	        }
+
+	        .back-link {
+	            position: absolute;
+	            top: 20px;
+	            left: 20px;
+	            text-decoration: none;
+	            color: #555;
+	            font-size: 0.95rem;
+	            transition: color 0.3s ease;
+	        }
+
+	        .back-link:hover {
+	            color: #f5576c;
+	        }
+
+	        .action-grid {
+	            display: flex;
+	            flex-direction: column;
+	            gap: 20px;
+	        }
+
+	        .action-btn {
+	            display: block;
+	            padding: 20px;
+	            background-color: #f5576c;
+	            color: white;
+	            border-radius: 10px;
+	            font-size: 1.1rem;
+	            font-weight: 600;
+	            text-decoration: none;
+	            box-shadow: 0 6px 12px rgba(245, 87, 108, 0.3);
+	            transition: background-color 0.3s ease, transform 0.2s ease;
+	        }
+
+	        .action-btn:hover {
+	            background-color: #d94359;
+	            transform: translateY(-3px);
+	        }
+
+	        .register-btn {
+	            background-color: #1abc9c;
+	            box-shadow: 0 6px 12px rgba(26, 188, 156, 0.3);
+	        }
+
+	        .register-btn:hover {
+	            background-color: #16a085;
+	        }
+
+	        .btn-icon {
+	            font-size: 1.5rem;
+	            display: block;
+	            margin-bottom: 5px;
+	        }
+
+	        @media (min-width: 600px) {
+	            .action-grid {
+	                flex-direction: row;
+	                justify-content: center;
+	            }
+
+	            .action-btn {
+	                flex: 1;
+	                margin: 0 10px;
+	            }
+	        }
+
+	        @media (max-width: 480px) {
+	            .container {
+	                padding: 30px 20px;
+	            }
+
+	            .title {
+	                font-size: 1.8rem;
+	            }
+
+	            .action-btn {
+	                font-size: 1rem;
+	                padding: 16px;
+	            }
+	        }
+	    </style>
+</head>
+<body>
+    <a href="/" class="back-link">← Back to Main</a>
+    
+    <div class="container">
+        <h1 class="title">👨‍🎓 Student Portal</h1>
+        <p>Welcome to the Student Portal. Please choose an option below:</p>
+        
+        <div class="action-grid">
+            <a href="/student/register" class="action-btn register-btn">
+                <span class="btn-icon">📝</span>
+                <strong>Register</strong><br>
+                Create new account
+            </a>
+            
+            <a href="/student/login" class="action-btn">
+                <span class="btn-icon">🔐</span>
+                <strong>Login</strong><br>
+                Access your account
+            </a>
+        </div>
+    </div>
+</body>
+</html>

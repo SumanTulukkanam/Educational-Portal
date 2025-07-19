@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Exams</title>
+	<style>
+	    body {
+	        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+	        background-color: #f5f7fa;
+	        color: #333;
+	        padding: 20px;
+	        margin: 0;
+	    }
+
+	    h1, h2 {
+	        text-align: center;
+	        color: #2c3e50;
+	    }
+
+	    div {
+	        text-align: center;
+	        margin-bottom: 20px;
+	    }
+
+	    a {
+	        color: #2980b9;
+	        text-decoration: none;
+	        margin: 0 10px;
+	        font-weight: 500;
+	    }
+
+	    a:hover {
+	        text-decoration: underline;
+	    }
+
+	    table {
+	        width: 90%;
+	        margin: 0 auto;
+	        border-collapse: collapse;
+	        background-color: #fff;
+	        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+	    }
+
+	    th, td {
+	        padding: 12px 15px;
+	        text-align: center;
+	        border-bottom: 1px solid #ddd;
+	    }
+
+	    th {
+	        background-color: #34495e;
+	        color: white;
+	    }
+
+	    tr:nth-child(even) {
+	        background-color: #f2f2f2;
+	    }
+
+	    button {
+	        background-color: #2ecc71;
+	        color: white;
+	        border: none;
+	        padding: 8px 12px;
+	        border-radius: 4px;
+	        font-size: 13px;
+	        cursor: pointer;
+	        transition: background-color 0.3s ease;
+	    }
+
+	    button:hover {
+	        background-color: #27ae60;
+	    }
+
+	    button[type="submit"]:last-child {
+	        background-color: #e74c3c;
+	    }
+
+	    button[type="submit"]:last-child:hover {
+	        background-color: #c0392b;
+	    }
+
+	    form {
+	        display: inline;
+	    }
+	</style>
+	
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
+</head>
+<body>
+<h1>Manage Exams</h1>
+
+<div>
+<a href="/admin/dashboard">Back to Dashboard</a> |
+<a href="/admin/exams/create-exam">Create New Exam</a> |
+<a href="/admin/logout">Logout</a>
+</div>
+
+<h2>Exams List</h2>
+<table id="examsTable" class="display" style="width:100%">
+<thead>
+<tr>
+<th>Title</th>
+<th>Duration (min)</th>
+<th>Start Time</th>
+<th>End Time</th>
+<th>Total Marks</th>
+<th>Status</th>
+<th>Actions</th>
+</tr>
+</thead>
+<tbody>
+<tr th:each="exam : ${exams}">
+<td th:text="${exam.title}"></td>
+<td th:text="${exam.duration}"></td>
+<td th:text="${#temporals.format(exam.startTime, 'yyyy-MM-dd HH:mm')}"></td>
+<td th:text="${#temporals.format(exam.endTime, 'yyyy-MM-dd HH:mm')}"></td>
+<td th:text="${exam.totalMarks}"></td>
+<td th:text="${exam.active ? 'Active' : 'Inactive'}"></td>
+<td>
+<a th:href="@{/admin/exams/{id}/questions(id=${exam.id})}">Manage Questions</a> |
+<a th:href="@{/admin/exams/{id}/results(id=${exam.id})}">View Results</a> |
+
+<form method="post" th:action="@{/admin/exams/{id}/delete(id=${exam.id})}" style="display:inline;">
+<button type="submit" onclick="return confirm('Are you sure?')">Delete</button>
+</form>
+</td>
+</tr>
+</tbody>
+</table>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+
+<script>
+$(document).ready(function() {
+    $('#examsTable').DataTable({
+        "pageLength": 10,
+        "lengthChange": true,
+        "searching": true,
+        "ordering": true,
+        "info": true,
+        "autoWidth": false,
+        "responsive": true,
+        "columnDefs": [
+            { "orderable": false, "targets": 6 } // Disable sorting on Actions column
+        ]
+    });
+});
+</script>
+</body>
+</html>  

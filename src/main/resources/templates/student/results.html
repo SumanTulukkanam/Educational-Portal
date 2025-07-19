@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<title>Exam Results</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+body {
+font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+background-color: #f5f7fa;
+margin: 0;
+padding: 20px;
+color: #333;
+}
+
+h1 {
+text-align: center;
+color: #2c3e50;
+}
+
+nav {
+text-align: center;
+margin-bottom: 30px;
+}
+
+nav a {
+margin: 0 12px;
+text-decoration: none;
+color: #007bff;
+font-weight: bold;
+}
+
+nav a:hover {
+text-decoration: underline;
+}
+
+table {
+width: 100%;
+border-collapse: collapse;
+margin-top: 20px;
+background-color: #fff;
+box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+}
+
+th, td {
+padding: 12px 15px;
+text-align: center;
+border: 1px solid #ddd;
+}
+
+th {
+background-color: #f0f0f0;
+color: #333;
+}
+
+tr:nth-child(even) {
+background-color: #f9f9f9;
+}
+
+tr:hover {
+background-color: #f1f1f1;
+}
+
+.pass {
+color: green;
+font-weight: bold;
+}
+
+.fail {
+color: red;
+font-weight: bold;
+}
+
+p {
+text-align: center;
+font-size: 16px;
+margin-top: 40px;
+color: #777;
+}
+
+a {
+color: #007bff;
+}
+
+a:hover {
+text-decoration: underline;
+}
+</style>
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
+
+</head>
+
+<body>
+<h1>My Exam Results</h1>
+
+<nav>
+<a href="/student/dashboard">Dashboard</a> |
+<a href="/student/exams">Exams</a> |
+<a href="/student/logout">Logout</a>
+</nav>
+
+<div th:if="${attempts.isEmpty()}">
+<p>You haven't attempted any exams yet.</p>
+</div>
+
+<div th:unless="${attempts.isEmpty()}">
+<table id="resultsTable" class="display" style="width:100%">
+<thead>
+<tr>
+<th>Exam Title</th>
+<th>Start Time</th>
+<th>End Time</th>
+<th>Status</th>
+<th>Score</th>
+<th>Percentage</th>
+<th>Result</th>
+</tr>
+</thead>
+<tbody>
+<tr th:each="attempt : ${attempts}">
+<td th:text="${attempt.exam.title}">Exam Title</td>
+<td th:text="${#temporals.format(attempt.startTime, 'dd-MM-yyyy HH:mm')}">Start Time</td>
+<td th:text="${attempt.endTime != null ? #temporals.format(attempt.endTime, 'dd-MM-yyyy HH:mm') : 'N/A'}">End Time</td>
+<td th:text="${attempt.status}">Status</td>
+<td th:text="${attempt.obtainedMarks} + '/' + ${attempt.exam.totalMarks}">Score</td>
+<td th:text="${attempt.percentage} + '%'">Percentage</td>
+<td th:text="${attempt.passed ? 'PASS' : 'FAIL'}"
+th:style="${attempt.passed ? 'color: green;' : 'color: red;'}">Result</td>
+
+</tr>
+</tbody>
+</table>
+</div>
+
+<!-- jQuery and DataTables JS -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+
+<script th:inline="none">
+$(document).ready(function() {
+$('#resultsTable').DataTable({
+"pageLength": 10,
+"lengthChange": true,
+"searching": true,
+"ordering": true,
+"info": true,
+"autoWidth": false,
+"responsive": true,
+"order": [[ 1, 'desc' ]] // Sort by Start Time descending by default
+});
+});
+</script>
+</body>
+</html>
