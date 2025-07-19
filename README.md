@@ -32,7 +32,7 @@ git clone [https://github.com/SumanTulukkanam/Educational-Portal.git](https://gi
 mvn spring-boot\:run
 
 ```
-5. Visit: `http://localhost:8080`
+5. Visit: `http://localhost:8082`
 
 ## 📌 Outcome
 
